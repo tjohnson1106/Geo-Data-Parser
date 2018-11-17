@@ -4,8 +4,10 @@ defmodule ElhexDelivery.PostalCode.DataParserTest do
   doctest ElhexDelivery
 
   test "parse_data" do
-    data_rows = DataParser.parse_data()
-    first_row = Enum.at(data_rows, 0)
-    IO.inspect(first_row)
+    geolocation_data = DataParser.parse_data()
+    {latitude, longitude} = Map.get(geolocation_data, "94062")
+
+    assert is_float(latitude)
+    assert is_float(longitude)
   end
 end
