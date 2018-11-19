@@ -23,7 +23,7 @@ defmodule ElhexDelivery.PostalCode.Navigator do
   end
 
   defp get_geolocation(postal_code) when is_binary(postal_code) do
-    {123, 456}
+    Store.get_geolocation(postal_code)
   end
 
   # convert input value from integer to string
