@@ -14,7 +14,21 @@ defmodule ElhexDelivery.PostalCode.Navigator do
     22.95
   end
 
-  defp get_geolocation(postal_code) do
+  defp get_geolocation(postal_code) when is_binary(postal_code) do
     {123, 456}
+  end
+
+  # convert input value from integer to string
+  # enable user to use numbers
+
+  defp get_geolocation(postal_code) when is_integer(postal_code) do
+    postal_code = Integer.to_string(postal_code)
+    get_geolocation(postal_code)
+  end
+
+  defp get_geolocation(postal_code) do
+    error = "unexpected `postal_code` received:
+       (#{inspect(postal_code)})"
+    raise ArgumentError, error
   end
 end
