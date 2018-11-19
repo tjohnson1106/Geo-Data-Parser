@@ -2,7 +2,7 @@ defmodule ElhexDelivery.PostalCode.Store do
   use GenServer
   alias ElhexDelivery.PostalCode.DataParser
 
-  def start_link() do
+  def start_link do
     GenServer.start_link(
       __MODULE__,
       %{},
@@ -11,7 +11,7 @@ defmodule ElhexDelivery.PostalCode.Store do
   end
 
   def init(_) do
-    {:ok, DataParser.parse_date()}
+    {:ok, DataParser.parse_data()}
   end
 
   def get_geolocation(postal_code) do
@@ -21,5 +21,23 @@ defmodule ElhexDelivery.PostalCode.Store do
     })
   end
 
-  # TODO: Callback 111520181954
+  # synchronous method to abstract data via postal code
+  # user expects latitude longitude return
+
+  def handle_call(
+        {
+          :get_geolocation,
+          postal_code
+        },
+        _from,
+        geolocation_data
+      ) do
+    geolocation = Map.get(geolocation_data, postal_code)
+
+    {
+      :reply,
+      geolocation,
+      geolocation_data
+    }
+  end
 end
