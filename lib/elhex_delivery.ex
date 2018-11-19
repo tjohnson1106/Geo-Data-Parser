@@ -1,18 +1,9 @@
 defmodule ElhexDelivery do
-  @moduledoc """
-  Documentation for ElhexDelivery.
-  """
+  use Application
 
-  @doc """
-  Hello world.
+  # remember module must be specified in mix file
 
-  ## Examples
-
-      iex> ElhexDelivery.hello()
-      :world
-
-  """
-  def hello do
-    :world
+  def start(_type, _args) do
+    ElhexDelivery.Supervisor.start_link()
   end
 end
