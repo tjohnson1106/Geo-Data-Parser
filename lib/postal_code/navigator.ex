@@ -25,4 +25,10 @@ defmodule ElhexDelivery.PostalCode.Navigator do
     postal_code = Integer.to_string(postal_code)
     get_geolocation(postal_code)
   end
+
+  defp get_geolocation(postal_code) do
+    error = "unexpected `postal_code` received:
+       (#{inspect(postal_code)})"
+    raise ArgumentError, error
+  end
 end
