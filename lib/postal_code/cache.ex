@@ -32,7 +32,7 @@ defmodule ElhexDelivery.PostalCode.Cache do
 
   # Callbacks
 
-  def handle_call({:get_distance, from, to}) do
+  def handle_call({:get_distance, from, to}, _from, state) do
     key = MapSet.new([from, to])
     distance_map = Map.get(state, :distance)
     distance = Map.get(distance_map, key)
@@ -47,5 +47,7 @@ defmodule ElhexDelivery.PostalCode.Cache do
       Map.update!(state, :distance, fn distance_map ->
         Map.put(distance_map, key, distance)
       end)
+
+    {:noreply, state}
   end
 end
