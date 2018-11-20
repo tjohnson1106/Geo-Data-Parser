@@ -1,12 +1,33 @@
 defmodule ElhexDelivery.PostalCode.Navigator do
+  use GenServer
   alias :math, as: Math
   alias ElhexDelivery.PostalCode.Store
+
+  # TODO: Implement GenServer 111920181654
 
   # @radius 6371 #km
   @radius 3959
 
+  def start_link do
+    GenServer.start_link(__MODULE__, [], name: :postal_code_navigator)
+  end
+
+  # use gen server in get distance to call method and get reply
+  # move do_get_distance(from, to) to handle_call
+
   def get_distance(from, to) do
-    do_get_distance(from, to)
+    GenServer.call(:postal_code_navigator, {
+      :get_distance,
+      from,
+      to
+    })
+  end
+
+  # Callbacks
+
+  def handle_call({:get_distance, from, to}, _from, state) do
+    distance = do_get_distance(from, to)
+    {:reply, distance, state}
   end
 
   # note: when a private method shares a name as a 
