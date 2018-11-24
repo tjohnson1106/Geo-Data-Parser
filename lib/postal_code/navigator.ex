@@ -2,11 +2,15 @@ defmodule ElhexDelivery.PostalCode.Navigator do
   use GenServer
   alias :math, as: Math
   alias ElhexDelivery.PostalCode.Store
-
-  # TODO: Implement GenServer 111920181654
+  alias ElhexDelivery.PostalCode.Cache
 
   # @radius 6371 #km
   @radius 3959
+
+  # see compile error
+  # def init(postal_code_navigator) do
+  #   {:ok, start_link()}
+  # end
 
   def start_link do
     GenServer.start_link(__MODULE__, [], name: :postal_code_navigator)
@@ -37,25 +41,39 @@ defmodule ElhexDelivery.PostalCode.Navigator do
   # calculate_distance should remain static, at least for now
 
   defp do_get_distance(from, to) do
-    {lat1, long1} = get_geolocation(from)
-    {lat2, long2} = get_geolocation(to)
+    from = format_postal_code(from)
+    to = format_postal_code(to)
 
-    calculate_distance({lat1, long1}, {lat2, long2})
+    case Cache.get_distance(from, to) do
+      nil ->
+        {lat1, long1} = get_geolocation(from)
+        {lat2, long2} = get_geolocation(to)
+
+        distance = calculate_distance({lat1, long1}, {lat2, long2})
+        Cache.set_distance(from, to, distance)
+        distance
+
+      distance ->
+        distance
+    end
   end
 
-  defp get_geolocation(postal_code) when is_binary(postal_code) do
+  defp get_geolocation(postal_code) do
     Store.get_geolocation(postal_code)
   end
 
   # convert input value from integer to string
   # enable user to use numbers
 
-  defp get_geolocation(postal_code) when is_integer(postal_code) do
+  defp format_postal_code(postal_code) when is_binary(postal_code),
+    do: postal_code
+
+  defp format_postal_code(postal_code) when is_integer(postal_code) do
     postal_code = Integer.to_string(postal_code)
     get_geolocation(postal_code)
   end
 
-  defp get_geolocation(postal_code) do
+  defp format_postal_code(postal_code) do
     error = "unexpected `postal_code` received:
        (#{inspect(postal_code)})"
     raise ArgumentError, error
